@@ -29,6 +29,27 @@ class Scene:
 	mapDict = {} # структура для хранения объектов в ячейках карты
 	tileMap = TileMap()
 	
+	
+	
+	def Render(self):
+		pass
+		self.surface.fill(white)
+		self.RedrawVisibleObjects()
+		pygame.display.flip()
+	
+	
+	
+	def RedrawVisibleObjects(self):
+		self.surface.fill(white)
+		#self.tileMap.GetScreenList()
+		
+		
+		
+		Font2 =  pygame.font.Font(None, 24)#Courier New
+		text = "новый текст"
+		text_surf = Font2.render(text, 1, black, white)
+		self.surface.blit(text_surf, (10, 10))
+	
 	def __init__(self, width, height, caption):
 		self.Map = {}
 		pygame.init()
@@ -38,7 +59,19 @@ class Scene:
 		pygame.display.set_caption(caption)
 		
 		pass
-
+		
+	def events_handlers(self):
+		running = True
+		clock = pygame.time.Clock()
+		
+		while running:
+			clock.tick(10)
+			self.Render()# разве здесь нужно рендерить? А не после изменений?
+			for event in pygame.event.get():
+				
+				
+				if event.type == pygame.QUIT:
+					running = False
 
 class Text_Box:
 	def set(self, x, y, width = 60, height = 20, rx = 10, ry = 10):
@@ -84,7 +117,7 @@ def main():
 	# Инициализируем нужные объекты внутри, класс pygame и текстуру экрана
 	scene = Scene(400, 500, 'caption')
 	
-	#scene.events_handlers()# тут вся логика
+	scene.events_handlers()# тут вся логика
 
 
 if __name__ == '__main__':
