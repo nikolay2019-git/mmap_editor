@@ -9,6 +9,7 @@ import math
 white = [255, 255, 255]
 black = [0, 0, 0]
 
+
 class Quad_Int:
 	pass
 
@@ -40,8 +41,41 @@ class Scene:
 
 
 class Text_Box:
-	pass
-	
+	def set(self, x, y, width = 60, height = 20, rx = 10, ry = 10):
+		
+		self.x = x
+		self.y = y
+		self.rx = rx # 
+		self.ry = ry # 
+		self.width = width  
+		self.height = height
+		
+	def __init__(self):
+		
+		self.color = pygame.Color(0, 0, 0)
+		self.x = 0
+		self.y = 0
+		self.rx = 10 # 
+		self.ry = 10 # 
+		self.width = 60  # 
+		self.height = 20		
+		
+	def GetBoundingBox(self):
+		
+		quad_int = Quad_Int()
+		quad_int.x1 = self.x - self.rx
+		quad_int.y1 = self.y - self.ry
+		quad_int.x2 = self.x + self.width
+		quad_int.y2 = self.y + self.height
+		self.quad_int = quad_int
+		return quad_int		
+		
+	def Draw(self, surface):
+		
+		pygame.draw.circle(surface, white,(self.x, self.y), self.rx, 0)
+		pygame.draw.circle(surface, black,(self.x, self.y), self.rx, 1)
+		pygame.draw.rect(surface, white, (self.x, self.y, self.width, self.height), 0)
+		pygame.draw.rect(surface, black, (self.x, self.y, self.width, self.height), 1)
 
 
 
@@ -49,6 +83,7 @@ def main():
 	# Создаём объект Сцена, задаём параметры
 	# Инициализируем нужные объекты внутри, класс pygame и текстуру экрана
 	scene = Scene(400, 500, 'caption')
+	
 	#scene.events_handlers()# тут вся логика
 
 
