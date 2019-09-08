@@ -195,6 +195,21 @@ class Scene:
 			if textbox_id not in self.tileMap.mapDict[row][col]:
 				self.tileMap.mapDict[row][col].append(textbox_id)
 	
+	
+	
+	def redraw_text_box(self, tb):
+		#print ("Redraw")
+		"""
+		Отрисовка отдельного объекта
+		"""
+		x = tb.x + self.tileMap.deltaX
+		y = tb.y + self.tileMap.deltaY
+		
+		pygame.draw.circle(self.surface, white,(x, y), tb.rx, 0)
+		pygame.draw.circle(self.surface, black,(x, y), tb.rx, 1)
+		pygame.draw.rect(self.surface, white, (x, y, tb.width, tb.height), 0)
+		pygame.draw.rect(self.surface, tb.color, (x, y, tb.width, tb.height), 1)
+		
 	def render(self):
 		self.surface.fill(white)
 		self.redraw_visible_objects()
@@ -204,15 +219,27 @@ class Scene:
 	
 	def redraw_visible_objects(self):
 		self.surface.fill(white)
-		#self.tileMap.GetScreenList()
+		self.tileMap.get_screen_list()
 		
 		
 		# Кусок для тестирования вывода текста
-		Font2 =  pygame.font.Font(None, 24)#Courier New
-		text = "новый текст"
-		text_surf = Font2.render(text, 1, black, white)
-		self.surface.blit(text_surf, (10, 10))
-	
+		# Font2 =  pygame.font.Font(None, 24)#Courier New
+		# text = "новый текст"
+		# text_surf = Font2.render(text, 1, black, white)
+		# self.surface.blit(text_surf, (10, 10))
+		
+		
+		if len(self.tileMap.screenList) > 0:
+		
+			for id in self.tileMap.screenList:
+				# !4
+				#textbox = self.self.tileMap.textbox_array[id-1]
+				textbox = self.tileMap.textbox_array[id]        
+				self.redraw_text_box(textbox)
+		pygame.display.flip()
+		
+		
+		
 	def __init__(self, width, height, caption):
 		self.Map = {}
 		pygame.init()
