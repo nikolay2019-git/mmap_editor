@@ -63,7 +63,7 @@ class TileMap:
 		
 	def get_object_id_under_object(self, textbox):
 		pass
-				tb = textbox
+		tb = textbox
 		# перебираем tb.ConsistList 
 		# аппендим в список
 		textboxes_under_list = []
@@ -105,7 +105,7 @@ class TileMap:
 			# !3
 			#second_obj = self.self.tileMap.textbox_array[id-1]# уточнить адресацию
 			second_obj = self.textbox_array[id]# уточнить адресацию
-			AddTextBoxAllow = not self.CheckIntersect(first_obj,second_obj)# возвращает Пересекается (Да) или Не пересекается (нет)
+			AddTextBoxAllow = not self.check_intersect(first_obj,second_obj)# возвращает Пересекается (Да) или Не пересекается (нет)
 			# Если объекты пересекается, значит инвертируем, добавлять нельзя (нет)
 			if not AddTextBoxAllow:
 				return AddTextBoxAllow  # Ищем первое же пересечение (ДА) и выходим, больше не надо, запрещаем добавлять.
@@ -118,7 +118,7 @@ class TileMap:
 		
 		# print ("AddTextBoxAllow =", AddTextBoxAllow)
 		return AddTextBoxAllow 
-	def get_object_id_Under_point(self, x, y ):
+	def get_object_id_under_point(self, x, y ):
 		pass
 		ObjectId = -1
 		real_x = x - self.deltaX
@@ -181,6 +181,19 @@ class Scene:
 	tileMap = TileMap()
 	
 	
+	def append_to_map(self, index_pair_list, textbox_id):
+		pass
+		for index_pair in index_pair_list:
+			row = index_pair[0]
+			col = index_pair[1]
+			#if (self.tileMap.mapDict.get(row)) == None:
+			if row not in self.tileMap.mapDict:
+				self.tileMap.mapDict[row] = {}
+			#if (self.tileMap.mapDict[row].get(col)) == None:
+			if col not in self.tileMap.mapDict[row]:
+				self.tileMap.mapDict[row][col] = []
+			if textbox_id not in self.tileMap.mapDict[row][col]:
+				self.tileMap.mapDict[row][col].append(textbox_id)
 	
 	def render(self):
 		self.surface.fill(white)
@@ -208,6 +221,62 @@ class Scene:
 		self.surface.fill(white)
 		pygame.display.set_caption(caption)
 		
+	def try_create_textbox(self, mouse_x, mouse_y):
+		pass
+		tb = TextBox()# Временный текстбокс
+			
+		tb.set(mouse_x - self.tileMap.deltaX, mouse_y - self.tileMap.deltaY)# Установка объекта, коррекция положения 
+		# учёт смещения относительно начального положения вью
+		print ("mouse_x,mouse_y = ",mouse_x, mouse_y)
+		
+		
+		tb.consistList = self.get_consist_list(tb); 
+		AddTextBoxAllow = self.tileMap.get_object_id_under_object(tb) # Проверка, можно ли создать объект
+		
+		if AddTextBoxAllow :                                        
+			self.create_textbox(tb)
+	
+	def get_consist_list(self, tb):
+		pass
+		# print ("GetConsistList")
+		quad = tb.get_bounding_box()
+		# print ("    ",quad.x1,quad.y1, quad.x2, quad.y2)
+				
+		first_col = (quad.x1) // 64
+		first_row = (quad.y1) // 64
+		first_col_offset = quad.x1 %64
+		first_row_offset = quad.y1 % 64
+		
+		# print ("first_col = ", first_col, "first_row = ", first_row )
+		# print (first_col_offset, first_row_offset )
+		
+		last_col = quad.x2 // 64
+		last_row = quad.y2 // 64
+		last_col_offset = quad.x2 % 64
+		last_row_offset = quad.y2 % 64
+		
+		# print ("last_col = ", last_col, "last_row = ", last_row)
+		# print (last_col_offset, last_row_offset)
+		
+		tb.consistList = []
+		for row in range(first_row, last_row + 1):
+			for col in range(first_col, last_col + 1):
+				tb.consistList.append((row, col))
+		
+		# print (tb.consistList)
+		return tb.consistList
+	
+	def create_textbox(self, tb):
+		pass
+		textbox_id = len(self.tileMap.textbox_array)
+		self.tileMap.textbox_array.append(tb)
+		# Ошибка с -1
+		# -1 ? Id = 1 а индекс меньше длины массива. Индекс равен ИД когда он -1
+		# print ("self.self.tileMap.textbox_array ", self.tileMap.textbox_array)
+		# print ("textbox_id ", textbox_id)
+		self.append_to_map(tb.consistList, textbox_id)
+	
+	
 	def events_handlers(self):
 		running = True
 		clock = pygame.time.Clock()
@@ -235,7 +304,7 @@ class Scene:
 			self.selectionList.append(ObjectId)# Надо как-то убирать элементы из списка
 			pygame.time.set_timer(pygame.USEREVENT+1, 100)# Старт Анимации
 		if ObjectId == -1:
-			self.try_create_text_box(mouse_x, mouse_y)# Попытка создать новый объект
+			self.try_create_textbox(mouse_x, mouse_y)# Попытка создать новый объект
 			
 			
 			
@@ -275,7 +344,8 @@ class TextBox:
 		pygame.draw.circle(surface, black,(self.x, self.y), self.rx, 1)
 		pygame.draw.rect(surface, white, (self.x, self.y, self.width, self.height), 0)
 		pygame.draw.rect(surface, black, (self.x, self.y, self.width, self.height), 1)
-
+		
+	
 
 
 def main():
